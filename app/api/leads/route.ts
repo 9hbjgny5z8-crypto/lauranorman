@@ -19,11 +19,11 @@ export async function GET(request: Request) {
       });
     }
     case 'valuation': {
-      const leads = getValuationLeads();
+      const leads = getRecentValuationLeads();
       return NextResponse.json({ leads });
     }
     case 'buyer': {
-      const leads = getBuyerLeads();
+      const leads = getRecentBuyerLeads();
       return NextResponse.json({ leads });
     }
     case 'counts': {
