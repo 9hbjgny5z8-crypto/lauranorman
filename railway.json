@@ -1,6 +1,6 @@
 {
   "build": {
-    "builder": "NIXPACKS",
+    "builder": "DOCKER",
     "buildCommand": "npm install && npm run build"
   },
   "start": {
@@ -8,7 +8,11 @@
   },
   "domains": [
     {
-      "name": "lauranorman.me"
+      "name": "lauranorman.me",
+      "redirects": ["https://www.lauranorman.me"]
+    },
+    {
+      "name": "www.lauranorman.me"
     }
   ]
 }
