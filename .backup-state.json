@@ -1,0 +1,30 @@
+{
+  "timestamp": "2026-04-29T15:28:35.623003",
+  "project": "laura-norman real estate site",
+  "railway": {
+    "project": "generous-sparkle",
+    "service": "lauranorman",
+    "deployments": [
+      "a2f9ecff-8f52-4603-9658-9bbd2952bbe6",
+      "91d7a075-9ac5-49dd-94f6-9ea80b39fc1c",
+      "5d91b9dd-51f7-49f5-9677-bd37b19f06a6",
+      "c3580c6d"
+    ]
+  },
+  "files": {
+    "package.json": "{\n  \"name\": \"real-estate-leads\",\n  \"next\": \"^16.0.1\",\n  \"start\": \"next start (PORT from env)\"\n}",
+    "Dockerfile": "FROM node:20-slim, ENV PORT=3000, ENV HOST=0.0.0.0, npm install --omit=dev",
+    "railway.json": "builder: DOCKER, domain: lauranorman.me",
+    ".nvmrc": "20"
+  },
+  "git_log": [
+    "b30ad6c deploy: remove unused nixpacks.toml",
+    "73ea47e deploy: use npm install instead of npm ci",
+    "6932e83 deploy: add custom Dockerfile for npm 10",
+    "8d58555 deploy: pin npm 10 for Node 20",
+    "07516f5 deploy: fix Next.js to ^16.0.1, add .nvmrc Node 20",
+    "04d495a update lock file and pin node 20",
+    "3e58ebc Add lauranorman.me domain to railway config",
+    "d55876d fix function names for valuation/buyer leads"
+  ]
+}

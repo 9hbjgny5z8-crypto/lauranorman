@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { db } from '../../../lib/database';
 
+// D1 Worker API (set in Railway as D1_API_URL)
+const D1_API_URL = process.env.D1_API_URL;
+
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
@@ -32,32 +35,63 @@ export async function POST(request: NextRequest) {
     const createdAt = new Date();
     const created_at_str = createdAt.toISOString().replace('T', ' ').split('.')[0];
 
-    const stmt = db.prepare(
-      'INSERT INTO valuation_leads (id, created_at, full_name, email, phone, address, city, state, zip_code, property_type, bedrooms, bathrooms, square_feet, year_built, additional_info, utm_source, utm_medium, utm_campaign, utm_term, utm_content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-    );
-
-    stmt.run(
+    const lead = {
       id,
-      created_at_str,
-      data.full_name,
-      data.email,
-      data.phone,
-      data.address,
-      data.city,
-      data.state,
-      data.zip_code,
-      data.property_type,
+      full_name: data.full_name,
+      email: data.email,
+      phone: data.phone,
+      address: data.address,
+      city: data.city,
+      state: data.state,
+      zip_code: data.zip_code,
+      property_type: data.property_type,
       bedrooms,
       bathrooms,
-      squareFeet,
-      data.year_built ? parseInt(data.year_built) : null,
-      data.additional_info || null,
-      data.utm_source || null,
-      data.utm_medium || null,
-      data.utm_campaign || null,
-      data.utm_term || null,
-      data.utm_content || null,
-    );
+      square_feet: squareFeet,
+      year_built: data.year_built ? parseInt(data.year_built) : null,
+      additional_info: data.additional_info || null,
+      utm_source: data.utm_source || '',
+      utm_medium: data.utm_medium || '',
+      utm_campaign: data.utm_campaign || '',
+      utm_term: data.utm_term || '',
+      utm_content: data.utm_content || '',
+      status: 'new'
+    };
+
+    // Write to D1 Worker API (production) or local SQLite (dev)
+    if (D1_API_URL) {
+      await fetch(D1_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'valuation', ...lead })
+      });
+    } else {
+      const stmt = db.prepare(
+        'INSERT INTO valuation_leads (id, created_at, full_name, email, phone, address, city, state, zip_code, property_type, bedrooms, bathrooms, square_feet, year_built, additional_info, utm_source, utm_medium, utm_campaign, utm_term, utm_content) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      );
+      stmt.run(
+        id,
+        created_at_str,
+        data.full_name,
+        data.email,
+        data.phone,
+        data.address,
+        data.city,
+        data.state,
+        data.zip_code,
+        data.property_type,
+        bedrooms,
+        bathrooms,
+        squareFeet,
+        data.year_built ? parseInt(data.year_built) : null,
+        data.additional_info || null,
+        data.utm_source || null,
+        data.utm_medium || null,
+        data.utm_campaign || null,
+        data.utm_term || null,
+        data.utm_content || null,
+      );
+    }
 
     return NextResponse.json({ message: 'Lead captured successfully', id });
   } catch (error) {
