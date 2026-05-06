@@ -1,6 +1,6 @@
 {
   "build": {
-    "builder": "DOCKER",
+    "builder": "DOCKERFILE",
     "buildCommand": "npm install && npm run build"
   },
   "start": {
